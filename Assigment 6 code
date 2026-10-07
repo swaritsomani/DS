@@ -1,0 +1,173 @@
+//ASSIGNMENT 6
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MAX 100
+
+/* Stack for Infix to Postfix */
+char stack[MAX];
+int top = -1;
+
+void push(char x)
+{
+    stack[++top] = x;
+}
+
+char pop()
+{
+    return stack[top--];
+}
+
+int priority(char x)
+{
+    if (x == '^')
+        return 3;
+
+    if (x == '*' || x == '/')
+        return 2;
+
+    if (x == '+' || x == '-')
+        return 1;
+
+    return 0;
+}
+
+int isOperator(char x)
+{
+    return x == '+' || x == '-' ||
+           x == '*' || x == '/' ||
+           x == '^';
+}
+
+/* Infix to Postfix */
+void infixToPostfix(char infix[])
+{
+    char postfix[MAX];
+    int i, j = 0;
+
+    top = -1;
+
+    for (i = 0; infix[i] != '\0'; i++)
+    {
+        char x = infix[i];
+
+        if (isalnum(x))
+        {
+            postfix[j++] = x;
+        }
+        else if (x == '(')
+        {
+            push(x);
+        }
+        else if (x == ')')
+        {
+            while (top != -1 && stack[top] != '(')
+            {
+                postfix[j++] = pop();
+            }
+
+            if (top != -1)
+                pop();
+        }
+        else if (isOperator(x))
+        {
+            while (top != -1 &&
+                   stack[top] != '(' &&
+                   priority(stack[top]) >= priority(x))
+            {
+                postfix[j++] = pop();
+            }
+
+            push(x);
+        }
+    }
+
+    while (top != -1)
+    {
+        postfix[j++] = pop();
+    }
+
+    postfix[j] = '\0';
+
+    printf("Postfix Expression = %s\n", postfix);
+}
+
+
+/* Prefix to Infix */
+void prefixToInfix(char prefix[])
+{
+    char stack[MAX][MAX];
+    int top = -1;
+    int i;
+
+    for (i = strlen(prefix) - 1; i >= 0; i--)
+    {
+        char x = prefix[i];
+
+        if (isalnum(x))
+        {
+            stack[++top][0] = x;
+            stack[top][1] = '\0';
+        }
+        else if (isOperator(x))
+        {
+            char op1[MAX], op2[MAX], result[MAX];
+
+            strcpy(op1, stack[top--]);
+            strcpy(op2, stack[top--]);
+
+            snprintf(result, MAX,
+                     "(%s%c%s)",
+                     op1, x, op2);
+
+            strcpy(stack[++top], result);
+        }
+    }
+
+    printf("Infix Expression = %s\n", stack[top]);
+}
+
+
+int main()
+{
+    int choice;
+    char expression[MAX];
+
+    while (1)
+    {
+        printf("\n===== EXPRESSION CONVERSION =====\n");
+        printf("1. Infix to Postfix\n");
+        printf("2. Prefix to Infix\n");
+        printf("3. Exit\n");
+
+        printf("Enter choice: ");
+        scanf("%d", &choice);
+
+        if (choice == 1)
+        {
+            printf("Enter Infix Expression: ");
+            scanf("%s", expression);
+
+            infixToPostfix(expression);
+        }
+        else if (choice == 2)
+        {
+            printf("Enter Prefix Expression: ");
+            scanf("%s", expression);
+
+            prefixToInfix(expression);
+        }
+        else if (choice == 3)
+        {
+            printf("Program ended.\n");
+            break;
+        }
+        else
+        {
+            printf("Invalid choice!\n");
+        }
+    }
+
+    return 0;
+}
