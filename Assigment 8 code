@@ -1,0 +1,125 @@
+//Linear queue
+#include <stdio.h>
+#include <string.h>
+
+#define MAX 5
+
+struct Job
+{
+    int id;
+    char title[50];
+};
+
+struct Job queue[MAX];
+
+int front = -1;
+int rear = -1;
+
+/* Enqueue */
+void enqueue()
+{
+    struct Job j;
+
+    if (rear == MAX - 1)
+    {
+        printf("Queue Overflow! Print queue is full.\n");
+        return;
+    }
+
+    printf("Enter Job ID: ");
+    scanf("%d", &j.id);
+
+    printf("Enter Document Title: ");
+    scanf("%s", j.title);
+
+    if (front == -1)
+        front = 0;
+
+    rear++;
+
+    queue[rear] = j;
+
+    printf("Print job added successfully.\n");
+}
+
+/* Dequeue */
+void dequeue()
+{
+    if (front == -1 || front > rear)
+    {
+        printf("Queue Underflow! No print jobs available.\n");
+        return;
+    }
+
+    printf("Processed Job ID: %d\n", queue[front].id);
+    printf("Document Title: %s\n", queue[front].title);
+
+    front++;
+
+    if (front > rear)
+    {
+        front = -1;
+        rear = -1;
+    }
+}
+
+/* Display */
+void display()
+{
+    int i;
+
+    if (front == -1)
+    {
+        printf("No Pending Print Jobs.\n");
+        return;
+    }
+
+    printf("\nPending Print Jobs:\n");
+
+    for (i = front; i <= rear; i++)
+    {
+        printf("Job ID: %d, Title: %s\n",
+               queue[i].id,
+               queue[i].title);
+    }
+}
+
+/* Main */
+int main()
+{
+    int choice;
+
+    while (1)
+    {
+        printf("\n===== PRINTER QUEUE =====\n");
+        printf("1. Enqueue\n");
+        printf("2. Dequeue\n");
+        printf("3. Display\n");
+        printf("4. Exit\n");
+
+        printf("Enter choice: ");
+        scanf("%d", &choice);
+
+        switch (choice)
+        {
+            case 1:
+                enqueue();
+                break;
+
+            case 2:
+                dequeue();
+                break;
+
+            case 3:
+                display();
+                break;
+
+            case 4:
+                printf("Program ended.\n");
+                return 0;
+
+            default:
+                printf("Invalid choice!\n");
+        }
+    }
+}
